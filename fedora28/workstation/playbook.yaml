@@ -32,3 +32,6 @@
         name: gdm
         enabled: yes
         state: started
+
+    - name: "Set boot up target to GUI"
+      command: "systemctl set-default graphical.target"
