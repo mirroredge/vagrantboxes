@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: yes
+
+  vars:
+    - packages:
+      - ubuntu-desktop
+      - virtualbox-guest-dkms
+      - virtualbox-guest-utils
+      - virtualbox-guest-x11
+
+  tasks:
+
+    - name: Install aptitude for ansible apt module
+      command: "apt-get -y install aptitude"
+
+    - name: upgrade all packages
+      apt:
+        name: '*'
+        state: latest
+
+    - name: Install Workstation
+      apt:
+        name: "{{packages}}"
+        state: latest
+        install_recommends: false
+
+    - name: Enable gnome
+      systemd:
+        name: gdm3
+        enabled: yes
+        state: started

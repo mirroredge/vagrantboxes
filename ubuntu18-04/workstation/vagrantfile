@@ -1,0 +1,22 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+
+  config.vm.provider "virtualbox" do |v|
+   v.customize ["modifyvm", :id, "--vram", "256"]
+   v.customize ["modifyvm", :id, "--memory", 2048]
+   v.cpus = 4
+   v.gui = true
+  end
+
+  # Needed to run ansible
+  config.vm.provision "shell", inline: "apt-get install -y python"
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yaml"
+    #ansible.verbose = "-vvv"
+  end
+
+  # trigger reload for gnome to fully work
+  config.vm.provision :reload
+
+end

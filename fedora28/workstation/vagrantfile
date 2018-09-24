@@ -1,0 +1,19 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/fedora28"
+
+  # Wont work bug in fedora
+  #config.vm.synced_folder "fedora_share/", "/home/vagrant/share", create: true, owner: "vagrant", group: "vagrant"
+
+  config.vm.provider "virtualbox" do |v|
+   v.customize ["modifyvm", :id, "--vram", "256"]
+   v.customize ["modifyvm", :id, "--memory", 4096]
+   v.cpus = 4
+   v.gui = true
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yaml"
+    #ansible.verbose = "-vvv"
+  end
+
+end

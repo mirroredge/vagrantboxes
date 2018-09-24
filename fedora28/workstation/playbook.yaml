@@ -1,0 +1,34 @@
+---
+- hosts: all
+  become: yes
+
+  vars:
+    - packages:
+      - "@workstation-product-environment"
+      - "tilix"
+      - "libselinux-python"
+
+  tasks:
+
+    - name: upgrade all packages
+      dnf:
+        name: '*'
+        state: latest
+
+    - name: Install Workstation
+      dnf:
+        name: "{{packages}}"
+        state: latest
+
+    # Bug in something must use Xorg not default wayland
+    # https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-fix-flickering-in-fedora-on-virtualbox/
+    - lineinfile:
+        path: /etc/gdm/custom.conf
+        regexp: '.*WaylandEnable.*'
+        line: 'WaylandEnable=false'
+
+    - name: Enable gnome
+      systemd:
+        name: gdm
+        enabled: yes
+        state: started

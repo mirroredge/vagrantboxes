@@ -1,22 +1,18 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/rhel7"
 
+  config.vm.synced_folder "rhel_share/", "/home/vagrant/share", create: true, owner: "vagrant", group: "vagrant"
+
+
   config.vm.provider "virtualbox" do |v|
-   #v.customize ["modifyvm", :id, "--vram", "256"]
    v.customize ["modifyvm", :id, "--memory", 2048]
    v.cpus = 2
-   #v.gui = true
   end
 
   config.vm.provision "ansible" do |ansible|
-  ansible.playbook = "playbook.yaml"
-  ansible.ask_vault_pass = true
-  ansible.verbose = "-v"
-end
-
-  #config.vm.provision "shell", inline: "sudo yum -y update"
-  #Cant do this without some magic and insecure storing of passwords
-  #ssh in and run:
-  # sudo subscription manager --username <uname> --password <pass> --auto-attach
+    ansible.playbook = "playbook.yaml"
+    ansible.ask_vault_pass = true
+    #ansible.verbose = "-v"
+  end
 
 end
