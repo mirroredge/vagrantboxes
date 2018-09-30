@@ -4,10 +4,8 @@
 
   vars:
     - packages:
-      - ubuntu-desktop
       - virtualbox-guest-dkms
       - virtualbox-guest-utils
-      - virtualbox-guest-x11
 
   tasks:
     - include_vars: ubuntu_vault.yaml
@@ -21,14 +19,7 @@
         name: '*'
         state: latest
 
-    - name: Install Workstation
+    - name: Install Packages
       apt:
         name: "{{packages}}"
         state: latest
-        install_recommends: false
-
-    - name: Enable gnome
-      systemd:
-        name: gdm3
-        enabled: yes
-        state: started

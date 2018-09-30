@@ -4,9 +4,23 @@
 
   vars:
     - packages:
-      - "@workstation-product-environment"
+      - "@base-x"
+      - "gdm"
+      - "libnm-gtk"
+      - "gnome-shell"
+      - "gnome-terminal"
       - "tilix"
+      - "firefox"
+      - "gedit"
+      - "git"
+      - "f28-backgrounds-gnome"
+      - "mozilla-fira-mono-fonts"
+      - "vim-X11"
+      - "nautilus"
+      - "gnome-system-monitor"
+      - "ansible"
       - "libselinux-python"
+      - "akmod-VirtualBox"
 
   tasks:
 
@@ -15,10 +29,52 @@
         name: '*'
         state: latest
 
+    - name: "Enable RPM Fusion for vboxsf kernel module"
+      command: "dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-28.noarch.rpm"
+
     - name: Install Workstation
       dnf:
         name: "{{packages}}"
         state: latest
+
+    - name: Set background
+      command: "gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/f28/default/standard/f28.png"
+      become_user: vagrant
+
+    - name: Download Atom
+      get_url:
+        url: https://atom.io/download/rpm
+        dest: /tmp/atom.rpm
+        mode: u+rwx
+
+    - name: install Atom rpm from a local file
+      dnf:
+        name: '/tmp/atom.rpm'
+        state: present
+
+    - name: Create share folder
+      file:
+        path: "/home/vagrant/share"
+        owner: vagrant
+        group: vagrant
+        state: directory
+
+
+    # Super janky. Must mount to the user during the mount.
+    - name: Mount vboxsf folder
+      mount:
+        path: /home/vagrant/share
+        src: fedora_share
+        fstype: vboxsf
+        opts: "gid=1000,uid=1000"
+        state: present
+
+    - file:
+        path: "/home/vagrant/share"
+        owner: vagrant
+        group: vagrant
+        state: directory
+        recurse: yes
 
     # Bug in something must use Xorg not default wayland
     # https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-fix-flickering-in-fedora-on-virtualbox/
@@ -35,3 +91,18 @@
 
     - name: "Set boot up target to GUI"
       command: "systemctl set-default graphical.target"
+
+    # - include_vars: fedora_vault.yaml
+    #   no_log: true
+    #
+    # - name: Set some kernel parameters
+    #   lineinfile:
+    #     dest: "~/.bash_profile"
+    #     insertafter: EOF
+    #     line: " export {{item}}"
+    #   no_log: true
+    #   become_user: vagrant
+    #   with_items:
+    #     - "AWS_ACCESS_KEY_ID={{AWS_ACCESS_KEY_ID}}"
+    #     - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
+    #     - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"

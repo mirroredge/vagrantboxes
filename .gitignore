@@ -1,3 +1,12 @@
-rhel7/rhel_vault.yaml
+*vault.yaml
+ubuntu18-04/workstation/ubuntu_share/
+ubuntu18-04/server/ubuntu_share/
+
+fedora28/workstation/fedora_share/
+
+rhel7/workstation/rhel_share/
+
+
+*.log
 *.retry
 *.vagrant/
