@@ -69,15 +69,8 @@
         path: /home/vagrant/share
         src: fedora_share
         fstype: vboxsf
-        opts: "gid={{user_id}},uid={{user_id}}"
+        opts: "gid={{user_id.stdout}},uid={{user_id.stdout}}"
         state: present
-
-    - file:
-        path: "/home/vagrant/share"
-        owner: vagrant
-        group: vagrant
-        state: directory
-        recurse: yes
 
     # Bug in something must use Xorg not default wayland
     # https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-fix-flickering-in-fedora-on-virtualbox/

@@ -18,6 +18,11 @@ guest_port: 22
 ```
 
 For ansible add in the authorized keys:
+On the guest run:
+```
+systemctl enable sshd
+```
+On your host run:
 ```
 ssh vagrant@127.0.0.1 -p 2222 "mkdir ~/.ssh"
 scp -P 2222 -pr ~/.ssh/id_rsa.pub vagrant@127.0.0.1:/home/vagrant/.ssh/authorized_keys
