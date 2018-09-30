@@ -59,6 +59,9 @@
         group: vagrant
         state: directory
 
+    - name: Get user id
+      command: "id -u vagrant"
+      register: user_id
 
     # Super janky. Must mount to the user during the mount.
     - name: Mount vboxsf folder
@@ -66,7 +69,7 @@
         path: /home/vagrant/share
         src: fedora_share
         fstype: vboxsf
-        opts: "gid=1000,uid=1000"
+        opts: "gid={{user_id}},uid={{user_id}}"
         state: present
 
     - file:
