@@ -1,0 +1,55 @@
+---
+- hosts: all
+  become: yes
+
+  vars:
+    - packages:
+       - "gvim"
+       - "tilix"
+       - "atom"
+
+  tasks:
+
+    - name: upgrade all packages
+      pacman:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install Workstation
+      pacman:
+        name: "{{packages}}"
+        state: latest
+
+    - name: Create share folder
+      file:
+        path: "/home/vagrant/share"
+        owner: vagrant
+        group: vagrant
+        state: directory
+
+    - name: Copy sweet vim config
+      copy:
+        src: vim_config/vimrc
+        dest: /etc/vimrc
+
+
+    - name: Get user id
+      command: "id -u vagrant"
+      register: user_id
+
+
+    # Super janky. Must mount to the user during the mount.
+    - name: Mount vboxsf folder
+      mount:
+        path: /home/vagrant/share
+        src: manjaro_share
+        fstype: vboxsf
+        opts: "gid={{user_id}},uid={{user_id}}"
+        state: present
+
+    - file:
+        path: "/home/vagrant/share"
+        owner: vagrant
+        group: vagrant
+        state: directory
+        recurse: yes
