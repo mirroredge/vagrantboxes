@@ -19,6 +19,6 @@ Vagrant.configure("2") do |config|
   end
 
   ## Wont work bug in fedora
-  config.vm.synced_folder "fedora_share/", "/home/vagrant/share", disabled: true
+  #config.vm.synced_folder "fedora_share/", "/home/vagrant/share", disabled: true
 
 end
