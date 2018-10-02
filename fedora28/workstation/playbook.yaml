@@ -47,6 +47,15 @@
     - name: Add vagrant to wheel group
       command: "sudo usermod -aG wheel vagrant"
 
+    - name: set timezone to New york
+      timezone:
+        name: America/New_York
+
+    - name: Restart chrond
+      service:
+        name: chrond
+        state: reloaded
+
     - name: Download Atom
       get_url:
         url: https://atom.io/download/rpm
