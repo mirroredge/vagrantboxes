@@ -4,9 +4,14 @@ ubuntu18-04/server/ubuntu_share/
 
 fedora28/workstation/fedora_share/
 
-rhel7/workstation/rhel_share/
+rhel7/rhel_share/
 
 
+#Used to store local commands
+cmds
+
+*.python-version
+*.DS_Store
 *.log
 *.retry
 *.vagrant/

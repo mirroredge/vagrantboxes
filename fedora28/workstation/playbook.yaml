@@ -24,6 +24,9 @@
 
   tasks:
 
+    - include_vars: fedora_vault.yaml
+      no_log: true
+
     - name: upgrade all packages
       dnf:
         name: '*'
@@ -88,17 +91,14 @@
     - name: "Set boot up target to GUI"
       command: "systemctl set-default graphical.target"
 
-    # - include_vars: fedora_vault.yaml
-    #   no_log: true
-    #
-    # - name: Set some kernel parameters
-    #   lineinfile:
-    #     dest: "~/.bash_profile"
-    #     insertafter: EOF
-    #     line: " export {{item}}"
-    #   no_log: true
-    #   become_user: vagrant
-    #   with_items:
-    #     - "AWS_ACCESS_KEY_ID={{AWS_ACCESS_KEY_ID}}"
-    #     - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
-    #     - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"
+    - name: Set some kernel parameters
+      lineinfile:
+        dest: "~/.bash_profile"
+        insertafter: EOF
+        line: " export {{item}}"
+      no_log: true
+      become_user: vagrant
+      with_items:
+        - "AWS_ACCESS_KEY_ID={{AWS_ACCESS_KEY_ID}}"
+        - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
+        - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"
