@@ -44,6 +44,9 @@
       command: "gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/f28/default/standard/f28.png"
       become_user: vagrant
 
+    - name: Add vagrant to wheel group
+      command: "sudo usermod -aG wheel vagrant"
+
     - name: Download Atom
       get_url:
         url: https://atom.io/download/rpm
