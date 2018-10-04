@@ -85,7 +85,7 @@
         src: fedora_share
         fstype: vboxsf
         opts: "gid={{user_id.stdout}},uid={{user_id.stdout}}"
-        state: present
+        state: mounted
 
     # Bug in something must use Xorg not default wayland
     # https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-fix-flickering-in-fedora-on-virtualbox/

@@ -16,7 +16,7 @@
       - python2-boto3
       - ansible
 
-    - git_host: "repo name"
+    - git_host: "bitbucket.di2e.net/scm/ad722et/"
 
     - git_repos:
       - openshift-ansible-playbooks
@@ -28,27 +28,33 @@
     - include_vars: rhel_vault.yaml
       no_log: true
 
-    - name: Subscription Manager subscribe
-      redhat_subscription:
-        state: present
-        username: "{{sm_username}}"
-        password: "{{sm_password}}"
-        auto_attach: true
+    - name: Update and install what the user has permessions for
+      block:
+        - name: Subscription Manager subscribe
+          redhat_subscription:
+            state: present
+            username: "{{sm_username}}"
+            password: "{{sm_password}}"
 
-    - name: Enable a RHSM repositories
-      rhsm_repository:
-        name: "{{item}}"
-      with_items: "{{rhel_repos}}"
+            auto_attach: true
 
-    - name: upgrade all packages
-      yum:
-        name: '*'
-        state: latest
+        - name: Enable a RHSM repositories
+          rhsm_repository:
+            name: "{{item}}"
+          with_items: "{{rhel_repos}}"
 
-    - name: Install Workstation
-      yum:
-        name: "{{packages}}"
-        state: latest
+        - name: upgrade all packages
+          yum:
+            name: '*'
+            state: latest
+
+        - name: Install Workstation
+          yum:
+            name: "{{packages}}"
+            state: latest
+      rescue:
+        - debug:
+            msg: "Looks like you didnt have a RHEL openshift/server subscription"
 
     - name: Add vagrant to wheel group
       command: "usermod -aG wheel vagrant"
