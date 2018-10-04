@@ -2,14 +2,27 @@
 - hosts: all
   become: yes
   vars:
+
+    - rhel_repos:
+      - "rhel-7-server-ose-3.9-rpms"
+      - "rhel-7-server-ansible-2.6-rpms"
+
     - packages:
       - openscap-scanner
       - vim
       - scap-security-guide
       - git
+      - openshift-ansible
+      - python2-boto3
+      - ansible
 
-    - repos:
-      - 
+    - git_host: "repo name"
+
+    - git_repos:
+      - openshift-ansible-playbooks
+      - common-ansible-playbooks
+      - atlassian-ansible-playbooks
+      - nexus-ansible-playbooks
 
   tasks:
     - include_vars: rhel_vault.yaml
@@ -22,6 +35,11 @@
         password: "{{sm_password}}"
         auto_attach: true
 
+    - name: Enable a RHSM repositories
+      rhsm_repository:
+        name: "{{item}}"
+      with_items: "{{rhel_repos}}"
+
     - name: upgrade all packages
       yum:
         name: '*'
@@ -33,7 +51,7 @@
         state: latest
 
     - name: Add vagrant to wheel group
-      command: "sudo usermod -aG wheel vagrant"
+      command: "usermod -aG wheel vagrant"
 
     - name: set timezone to New york
       timezone:
@@ -56,11 +74,22 @@
         - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
         - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"
 
+    - name: Set git config email
+      command:   'git config --global user.email "{{git_email}}"'
+      become_user: vagrant
+
+    - name: Set git config email
+      command:   'git config --global user.name "{{git_username}}"'
+      become_user: vagrant
+
+
     - name: Get updated files from git repository
       git:
-        repo: https://{{ git_username | urlencode }}:{{ git_password | urlencode }}@{{item}}
-        dest: /home/vagrant/share
-      with_items: "{{repos}}"
+        repo: https://{{ git_username | urlencode }}:{{ git_password | urlencode }}@{{git_host}}{{item}}.git
+        dest: /home/vagrant/share/{{item}}
+      with_items: "{{git_repos}}"
+
+
 
 
     # - name: Make Sig dir

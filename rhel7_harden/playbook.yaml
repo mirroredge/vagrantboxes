@@ -1,0 +1,49 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    - packages:
+      - openscap-scanner
+      - scap-security-guide
+
+  tasks:
+    - include_vars: rhel_vault.yaml
+      no_log: true
+
+    - name: Subscription Manager subscribe
+      redhat_subscription:
+        state: present
+        username: "{{sm_username}}"
+        password: "{{sm_password}}"
+        auto_attach: true
+
+    - name: upgrade all packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install OpenScap
+      yum:
+        name: "{{packages}}"
+        state: latest
+
+    - name: Make Sig dir
+      file: path=/stigs state=directory
+
+    - name: Initial OpenScap Scan (USGCB/STIG)
+      command: "sudo oscap xccdf eval --profile ospp-rhel7 --stig-viewer /stigs/initial_stig_results.xml --report /stigs/initial_stig_results.html /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml"
+      ignore_errors: yes
+
+    - name: Remediate OpenScap Scan (USGCB/STIG)
+      command: "sudo oscap xccdf eval --remediate --profile ospp-rhel7 --stig-viewer /stigs/remediate_stig_results.xml --report /stigs/remediate_stig_results.html /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml"
+      ignore_errors: yes
+
+    - name: Compress directory /path/to/foo/ into /path/to/foo.tgz
+      archive:
+        path: /stigs
+        dest: /stigs/stigs.tgz
+
+    - name: Copy stig reports
+      fetch:
+        src: /stigs/stigs.tgz
+        dest: /tmp/stigs.tgz

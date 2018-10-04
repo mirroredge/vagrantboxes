@@ -4,6 +4,6 @@ manjaro  ansible_host=127.0.0.1
 
 [all:vars]
 ansible_connection=ssh
-ansible_port=2222
+ansible_port=8000
 ansible_user=vagrant
 ansible_sudo_pass=vagrant
