@@ -51,9 +51,9 @@
       timezone:
         name: America/New_York
 
-    - name: Restart chrond
+    - name: Restart crond
       service:
-        name: chrond
+        name: crond
         state: reloaded
 
     - name: Download Atom

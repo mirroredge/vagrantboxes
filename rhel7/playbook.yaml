@@ -71,6 +71,11 @@
       timezone:
         name: America/New_York
 
+    - name: Restart crond
+      service:
+        name: crond
+        state: reloaded
+
     - name: Copy sweet vim config
       copy:
         src: vim_config/vimrc
