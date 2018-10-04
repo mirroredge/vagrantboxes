@@ -4,7 +4,12 @@
   vars:
     - packages:
       - openscap-scanner
+      - vim
       - scap-security-guide
+      - git
+
+    - repos:
+      - 
 
   tasks:
     - include_vars: rhel_vault.yaml
@@ -22,11 +27,42 @@
         name: '*'
         state: latest
 
-    # - name: Install OpenScap
-    #   yum:
-    #     name: "{{packages}}"
-    #     state: latest
-    #
+    - name: Install Workstation
+      yum:
+        name: "{{packages}}"
+        state: latest
+
+    - name: Add vagrant to wheel group
+      command: "sudo usermod -aG wheel vagrant"
+
+    - name: set timezone to New york
+      timezone:
+        name: America/New_York
+
+    - name: Copy sweet vim config
+      copy:
+        src: vim_config/vimrc
+        dest: /etc/vimrc
+
+    - name: Set some kernel parameters
+      lineinfile:
+        dest: "~/.bash_profile"
+        insertafter: EOF
+        line: " export {{item}}"
+      no_log: true
+      become_user: vagrant
+      with_items:
+        - "AWS_ACCESS_KEY_ID={{AWS_ACCESS_KEY_ID}}"
+        - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
+        - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"
+
+    - name: Get updated files from git repository
+      git:
+        repo: https://{{ git_username | urlencode }}:{{ git_password | urlencode }}@{{item}}
+        dest: /home/vagrant/share
+      with_items: "{{repos}}"
+
+
     # - name: Make Sig dir
     #   file: path=/stigs state=directory
     #
