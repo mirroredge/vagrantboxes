@@ -7,12 +7,14 @@
       - "rhel-7-server-ose-3.9-rpms"
       - "rhel-7-server-ansible-2.6-rpms"
 
+    - openshift_packages:
+      - openshift-ansible
+
     - packages:
       - openscap-scanner
       - vim
       - scap-security-guide
       - git
-      - openshift-ansible
       - python2-boto3
       - ansible
 
@@ -28,33 +30,39 @@
     - include_vars: rhel_vault.yaml
       no_log: true
 
-    - name: Update and install what the user has permessions for
+
+    - name: Subscription Manager subscribe
+      redhat_subscription:
+        state: present
+        username: "{{sm_username}}"
+        password: "{{sm_password}}"
+
+        auto_attach: true
+
+    - name: Attempt to install RHEL7 Server and Openshift Packages
       block:
-        - name: Subscription Manager subscribe
-          redhat_subscription:
-            state: present
-            username: "{{sm_username}}"
-            password: "{{sm_password}}"
-
-            auto_attach: true
-
         - name: Enable a RHSM repositories
           rhsm_repository:
             name: "{{item}}"
           with_items: "{{rhel_repos}}"
-
-        - name: upgrade all packages
+        - name: Install Openshift Workstation
           yum:
-            name: '*'
-            state: latest
-
-        - name: Install Workstation
-          yum:
-            name: "{{packages}}"
+            name: "{{openshift_packages}}"
             state: latest
       rescue:
         - debug:
             msg: "Looks like you didnt have a RHEL openshift/server subscription"
+
+    - name: upgrade all packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install Workstation
+      yum:
+        name: "{{packages}}"
+        state: latest
+
 
     - name: Add vagrant to wheel group
       command: "usermod -aG wheel vagrant"
