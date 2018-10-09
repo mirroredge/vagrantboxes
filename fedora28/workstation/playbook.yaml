@@ -52,11 +52,6 @@
       timezone:
         name: America/New_York
 
-    - name: Restart crond
-      service:
-        name: crond
-        state: reloaded
-
     - name: Download Atom
       get_url:
         url: https://atom.io/download/rpm

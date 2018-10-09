@@ -16,6 +16,7 @@
       - scap-security-guide
       - git
       - python2-boto3
+      - python2-boto
       - ansible
 
     - git_host: "bitbucket.di2e.net/scm/ad722et/"
