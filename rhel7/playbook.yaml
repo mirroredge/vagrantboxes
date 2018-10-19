@@ -23,14 +23,11 @@
     - pip_user:
       - awscli
 
-    - git_host: <your host here>
-
-    - git_repos:
-      - <your repo here>
-
   tasks:
     - include_vars: rhel_vault.yaml
       no_log: true
+
+    - include_vars: repo_vars.yaml
 
 
     - name: Subscription Manager subscribe
@@ -116,3 +113,4 @@
         repo: https://{{ git_username | urlencode }}:{{ git_password | urlencode }}@{{git_host}}{{item}}.git
         dest: /home/vagrant/share/{{item}}
       with_items: "{{git_repos}}"
+      when: git_repos is defined and git_host is defined and git_password is defined and git_username is defined

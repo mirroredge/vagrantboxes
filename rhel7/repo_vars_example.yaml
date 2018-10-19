@@ -1,0 +1,3 @@
+git_host: "github"
+git_repos:
+    - vagrantboxes
