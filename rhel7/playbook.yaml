@@ -17,15 +17,16 @@
       - git
       - python2-boto3
       - python2-boto
+      - python2-pip
       - ansible
 
-    - git_host: "bitbucket.di2e.net/scm/ad722et/"
+    - pip_user:
+      - awscli
+
+    - git_host: <your host here>
 
     - git_repos:
-      - openshift-ansible-playbooks
-      - common-ansible-playbooks
-      - atlassian-ansible-playbooks
-      - nexus-ansible-playbooks
+      - <your repo here>
 
   tasks:
     - include_vars: rhel_vault.yaml
@@ -42,7 +43,7 @@
 
     - name: Attempt to install RHEL7 Server and Openshift Packages
       block:
-        - name: Enable a RHSM repositories
+        - name: Enable openshift RHSM repositories
           rhsm_repository:
             name: "{{item}}"
           with_items: "{{rhel_repos}}"
@@ -64,7 +65,6 @@
         name: "{{packages}}"
         state: latest
 
-
     - name: Add vagrant to wheel group
       command: "usermod -aG wheel vagrant"
 
@@ -82,7 +82,7 @@
         src: vim_config/vimrc
         dest: /etc/vimrc
 
-    - name: Set some kernel parameters
+    - name: Env parameters
       lineinfile:
         dest: "~/.bash_profile"
         insertafter: EOF
@@ -94,6 +94,15 @@
         - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
         - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"
 
+    - name: upgrade pip
+      shell: "pip install --upgrade pip"
+
+    - name: Install aws tools
+      pip:
+        name: "{{item}}"
+        extra_args: --user
+      with_items: "{{pip_user}}"
+
     - name: Set git config email
       command:   'git config --global user.email "{{git_email}}"'
       become_user: vagrant
@@ -102,33 +111,8 @@
       command:   'git config --global user.name "{{git_username}}"'
       become_user: vagrant
 
-
     - name: Get updated files from git repository
       git:
         repo: https://{{ git_username | urlencode }}:{{ git_password | urlencode }}@{{git_host}}{{item}}.git
         dest: /home/vagrant/share/{{item}}
       with_items: "{{git_repos}}"
-
-
-
-
-    # - name: Make Sig dir
-    #   file: path=/stigs state=directory
-    #
-    # - name: Initial OpenScap Scan (USGCB/STIG)
-    #   command: "sudo oscap xccdf eval --profile ospp-rhel7 --stig-viewer /stigs/initial_stig_results.xml --report /stigs/initial_stig_results.html /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml"
-    #   ignore_errors: yes
-    #
-    # - name: Remediate OpenScap Scan (USGCB/STIG)
-    #   command: "sudo oscap xccdf eval --remediate --profile ospp-rhel7 --stig-viewer /stigs/remediate_stig_results.xml --report /stigs/remediate_stig_results.html /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml"
-    #   ignore_errors: yes
-    #
-    # - name: Compress directory /path/to/foo/ into /path/to/foo.tgz
-    #   archive:
-    #     path: /stigs
-    #     dest: /stigs/stigs.tgz
-    #
-    # - name: Copy stig reports
-    #   fetch:
-    #     src: /stigs/stigs.tgz
-    #     dest: /tmp/stigs.tgz
