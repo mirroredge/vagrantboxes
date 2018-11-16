@@ -1,0 +1,45 @@
+---
+- hosts: all
+  become: yes
+
+  vars:
+    - packages:
+      - buildah
+      - docker
+      - gvim
+      - tilix
+      - atom
+      - xorg
+      - cinnamon
+      - nemo-fileroller
+      - mate-extra
+      - lightdm
+      - lightdm-gtk-greeter
+      # All video and sound codecs get installed by vlc
+      - vlc
+      - firefox
+      - gedit
+      - flashplugin
+      - tar
+      - rsync
+      - conky
+      - git
+      - base-devel
+
+  tasks:
+
+    - name: Upgrade system
+      pacman:
+        update_cache: yes
+        upgrade: yes
+    - name: install workstation
+      pacman:
+        name: "{{item}}"
+        state: present
+      with_items: "{{packages}}"
+
+    - name: Enable gnome
+      systemd:
+        name: lightdm
+        enabled: no
+        state: stopped
