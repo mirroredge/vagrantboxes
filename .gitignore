@@ -1,7 +1,9 @@
 *vault.yaml
 *repo_vars.yaml
-ubuntu18-04/workstation/ubuntu_share/
-ubuntu18-04/server/ubuntu_share/
+ubuntu/workstation/ubuntu_share/
+ubuntu/server/ubuntu_share/
+runc/runc_share/
+rkt/rkt_share/
 
 fedora28/workstation/fedora_share/
 
