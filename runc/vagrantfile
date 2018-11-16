@@ -1,0 +1,30 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "archlinux/archlinux"
+  config.vm.hostname = "runc"
+
+  config.vm.synced_folder "runc_share/", "/home/vagrant/share", create: true, owner: "vagrant", group: "vagrant"
+
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    v.customize ["modifyvm", :id, "--vram", "256"]
+    v.customize ["modifyvm", :id, "--memory", 8192]
+    v.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+    v.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
+    v.cpus = 4
+    v.gui = true
+  end
+
+
+  config.vm.network "private_network", type: "dhcp"
+  config.vm.provision :shell, inline: "pacman -S --noconfirm python"
+
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python" }
+    ansible.playbook = "playbook.yaml"
+    #ansible.verbose = "-vvvv"
+  end
+
+
+end

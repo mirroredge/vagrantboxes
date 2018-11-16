@@ -1,4 +1,5 @@
 *vault.yaml
+*repo_vars.yaml
 ubuntu18-04/workstation/ubuntu_share/
 ubuntu18-04/server/ubuntu_share/
 

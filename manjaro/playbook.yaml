@@ -50,7 +50,7 @@
         src: manjaro_share
         fstype: vboxsf
         opts: "uid={{vagrant_user_id.stdout}},gid={{vagrant_user_id.stdout}},rw,dmode=700,fmode=600,noauto,x-systemd.automount"
-        state: present
+        state: mounted
 
     - name: Enable and start vbox services
       systemd:
