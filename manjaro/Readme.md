@@ -5,6 +5,7 @@ Then create a user vagrant with the password vagrant
 ```
 useradd -m vagrant
 usermod -aG wheel vagrant
+passwd vagrant  //set password to vagrant
 ```
 
 *Note that I use this to escalate to sudo in the inventory file it is not secure in any way and should only be used for dev/test purposes*

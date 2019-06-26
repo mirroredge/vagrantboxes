@@ -5,41 +5,87 @@
   vars:
     - packages:
       - buildah
-      - docker
+      - podman
       - gvim
-      - tilix
-      - atom
       - xorg
-      - cinnamon
-      - nemo-fileroller
-      - mate-extra
-      - lightdm
-      - lightdm-gtk-greeter
+      - gnome
+      - gnome-extra
       # All video and sound codecs get installed by vlc
       - vlc
       - firefox
-      - gedit
       - flashplugin
       - tar
       - rsync
       - conky
       - git
       - base-devel
+      - virtualbox-guest-utils
+      - powerline 
+      - powerline-fonts
+      - zsh
+      - hicolor-icon-theme
+      - neofetch
+    - aur_packages:
+      - visual-studio-code-bin
+      - dive
 
   tasks:
+
+
+    - name: Install Guest Utils
+      pacman:
+        name: virtualbox-guest-utils-nox
+        state: absent
 
     - name: Upgrade system
       pacman:
         update_cache: yes
         upgrade: yes
+
     - name: install workstation
       pacman:
-        name: "{{item}}"
-        state: present
-      with_items: "{{packages}}"
+        name: "{{packages}}"
+
+    - name: Install AUR Packages (yay clone)
+      git:
+        repo: https://aur.archlinux.org/yay.git
+        dest: "/home/vagrant/yay"
+      become_user: "vagrant"
+
+    - name: Install AUR Packages (yay install)
+      shell: "makepkg --noconfirm -si"
+      args:
+        chdir: "/home/vagrant/yay"
+      become_user: "vagrant"
+
+    - name: Install AUR Packages (yay install packages)
+      shell: "yay -S --noconfirm {{item}}"
+      loop: "{{aur_packages}}"
+      become_user: "vagrant"
+
+
+    # Bug in something must use Xorg not default wayland
+    # https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-fix-flickering-in-fedora-on-virtualbox/
+    - lineinfile:
+        path: /etc/gdm/custom.conf
+        regexp: '.*WaylandEnable.*'
+        line: 'WaylandEnable=false'
+
+    - name: Copy sweet vim config
+      copy:
+        src: vim_config/vimrc
+        dest: /etc/vimrc
+
+    - name: Enable and start vbox services
+      systemd:
+        name: vboxservice
+        state: started
+        enabled: True
 
     - name: Enable gnome
       systemd:
-        name: lightdm
-        enabled: no
-        state: stopped
+        name: gdm
+        enabled: yes
+        state: started
+
+      

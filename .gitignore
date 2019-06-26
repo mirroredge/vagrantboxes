@@ -4,6 +4,7 @@ ubuntu/workstation/ubuntu_share/
 ubuntu/server/ubuntu_share/
 runc/runc_share/
 rkt/rkt_share/
+arch/arch_share/
 
 fedora28/workstation/fedora_share/
 

@@ -4,9 +4,14 @@
 
   vars:
     - packages:
-       - "gvim"
-       - "tilix"
-       - "atom"
+       - gvim
+       - tilix
+       - atom
+       - base-devel
+       - git
+       - buildah
+       - podman
+       - pacaur
 
   tasks:
 
@@ -41,9 +46,6 @@
       debug:
         msg: "User id is: {{vagrant_user_id.stdout}}"
 
-
-          #     #WARNING this command is not idempotent
-          # I am getting extra entries in /etc/fstab
     - name: Mount vboxsf folder
       mount:
         path: /home/vagrant/share
