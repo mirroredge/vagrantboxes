@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+
+  vars:
+    - packages:
+      - git
+      - podman
+      - buildah
+      - https://github.com/wagoodman/dive/releases/download/v0.8.1/dive_0.8.1_linux_amd64.rpm
+
+  tasks:
+
+    - name: upgrade all packages
+      dnf:
+        name: '*'
+        state: latest
+
+    - name: Install Workstation
+      dnf:
+        name: "{{packages}}"
+        state: latest
+
+    - name: set timezone to New york
+      timezone:
+        name: America/New_York
+
+
