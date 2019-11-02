@@ -25,8 +25,8 @@
 
   tasks:
 
-    - include_vars: fedora_vault.yaml
-      no_log: true
+    # - include_vars: fedora_vault.yaml
+    #   no_log: true
 
     - name: upgrade all packages
       dnf:
@@ -34,7 +34,7 @@
         state: latest
 
     - name: "Enable RPM Fusion for vboxsf kernel module"
-      command: "dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-28.noarch.rpm"
+      command: "dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-30.noarch.rpm"
 
     - name: Install Workstation
       dnf:
@@ -63,26 +63,6 @@
         name: '/tmp/atom.rpm'
         state: present
 
-    - name: Create share folder
-      file:
-        path: "/home/vagrant/share"
-        owner: vagrant
-        group: vagrant
-        state: directory
-
-    - name: Get user id
-      command: "id -u vagrant"
-      register: user_id
-
-    # Super janky. Must mount to the user during the mount.
-    - name: Mount vboxsf folder
-      mount:
-        path: /home/vagrant/share
-        src: fedora_share
-        fstype: vboxsf
-        opts: "gid={{user_id.stdout}},uid={{user_id.stdout}}"
-        state: mounted
-
     # Bug in something must use Xorg not default wayland
     # https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-fix-flickering-in-fedora-on-virtualbox/
     - lineinfile:
@@ -99,14 +79,14 @@
     - name: "Set boot up target to GUI"
       command: "systemctl set-default graphical.target"
 
-    - name: Set some kernel parameters
-      lineinfile:
-        dest: "~/.bash_profile"
-        insertafter: EOF
-        line: " export {{item}}"
-      no_log: true
-      become_user: vagrant
-      with_items:
-        - "AWS_ACCESS_KEY_ID={{AWS_ACCESS_KEY_ID}}"
-        - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
-        - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"
+    # - name: Set some kernel parameters
+    #   lineinfile:
+    #     dest: "~/.bash_profile"
+    #     insertafter: EOF
+    #     line: " export {{item}}"
+    #   no_log: true
+    #   become_user: vagrant
+    #   with_items:
+    #     - "AWS_ACCESS_KEY_ID={{AWS_ACCESS_KEY_ID}}"
+    #     - "AWS_SECRET_ACCESS_KEY={{AWS_SECRET_ACCESS_KEY}}"
+    #     - "AWS_DEFAULT_REGION={{AWS_DEFAULT_REGION}}"
